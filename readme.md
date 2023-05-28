@@ -1,6 +1,21 @@
-# REACT TESTING CHEAT SHEET
+### REACT TESTING CHEAT SHEET
 
-## RENDER
+### Table of Contents
+
+1. [Render](#render)
+2. [Get](#get)
+3. [Get All](#get-all)
+4. [Query](#query)
+5. [Query All](#query-all)
+6. [Find](#find)
+7. [Find All](#find-all)
+8. [User Event](#user-event)
+9. [Providers](#providers)
+10. [Hooks](#hooks)
+11. [Debug](#debug)
+12. [Testing Playground Extension](#testing-playground-extension)
+
+#### RENDER
 
 Render element in VDOM so that it can be tested
 
@@ -11,7 +26,7 @@ Render element in VDOM so that it can be tested
   render(<SomeElement something={something} />)
 ```
 
-## GET
+#### GET
 
 Positive queries, if not found error thrown
 
@@ -27,7 +42,7 @@ Positive queries, if not found error thrown
   // 8. getByTestId
 ```
 
-## GET ALL
+#### GET ALL
 
 Positive queries, if not found error thrown
 
@@ -43,7 +58,7 @@ Positive queries, if not found error thrown
   // 8. getAllByTestId
 ```
 
-## QUERY
+#### QUERY
 
 Negative or positive queries, useful for asserting an element that is not present, does not throw error if no match, returns null
 
@@ -59,7 +74,7 @@ Negative or positive queries, useful for asserting an element that is not presen
   // 8. queryByTestId
 ```
 
-## QUERY ALL
+#### QUERY ALL
 
 Negative or positive queries, useful for asserting an element that is not present, does not throw error if no match, returns null
 
@@ -75,7 +90,7 @@ Negative or positive queries, useful for asserting an element that is not presen
   // 8. queryAllByTestId
 ```
 
-## FIND
+#### FIND
 
 Positive query for async elements, use async function and await element in test, returns promise, resolves if found, reject if not found within a timeout - default timeout is 1000ms
 Passing a object { timeout: millisecondsInteger } to a query modifies the timeout
@@ -92,7 +107,7 @@ Passing a object { timeout: millisecondsInteger } to a query modifies the timeou
   // 8. findByTestId
 ```
 
-## FIND ALL
+#### FIND ALL
 
 Positive query for async elements, use async function and await element in test, returns promise, resolves if found, reject if not found within a timeout - default timeout is 1000ms
 Passing a object { timeout: millisecondsInteger } to a query modifies the timeout
@@ -109,7 +124,7 @@ Passing a object { timeout: millisecondsInteger } to a query modifies the timeou
   // 8. findAllByTestId
 ```
 
-## USER EVENTS
+#### USER EVENT
 
 Library for simulating user events, use async function and await user interactions
 
@@ -119,6 +134,8 @@ import user from '@testing-library/user-event'
 const button = screen.getByRole('button', { name: 'someButton' })
 await user.click(button)
 ```
+
+MOUSE
 
 Convenience APIs
 
@@ -143,7 +160,95 @@ pointer('[MouseLeft>]')
 pointer('[/MouseLeft]')
 ```
 
-## DEBUG
+KEYBOARD
+
+Convenience API
+
+```
+tab()
+type() // type(element, string)
+```
+
+Utility API
+
+```
+clear() // e.g. userEvent.clear(element)
+selectOptions() // e.g. userEvent.selectOptions(element, [value, label])
+deselectOptions() // e.g userEvent.deselectOptions(element, value)
+upload() // e.g. userEvent.upload(input, file)
+```
+
+Clipboard API
+
+```
+copy()
+cut()
+```
+
+Keyboard API
+
+```
+keyboard()
+// examples
+keyboard('foo') // translates to f, o, o
+keyboard('{Shift>}A{/Shift}') // translates to: Shift(down), A, Shift(up)
+```
+
+#### Providers
+
+To test the components with the existing app providers, we can pass the provider to the render option for a one off test or create a test-utils.tsx file in src so that each component is tested with a provider.
+
+```
+// ONE OFF PROVIDER TEST
+render(<SomeComponent />, { wrapper: AppProviders })
+
+// PROVIDER FOR ALL TESTS
+
+// AppProviders.tsx
+function AppProviders({ children }: { children: React.ReactNode }){
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      {children}
+    </ThemeProvider>
+  )
+}
+
+// test-utils.tsx
+import { ReactElement } from 'react'
+import { render, RenderOptions } from '@testing-library/react'
+import {AppProviders} from './AppProviders'
+
+const customRender = (
+  ui: ReactElement,
+  options?: Omit<RenderOptions, 'wrapper'>
+) => render(ui, { wrapper: AppProviders, ...options })
+
+export * from '@testing-library/react'
+export { customRender as render }
+```
+
+When using the test-utils option for all components, it is necessary to import from test-utils rather then @testing-library/react
+
+Example:
+
+```
+import {render, screen} from '../../test-utils'
+```
+
+#### HOOKS
+
+When testing hooks, instead of the render function we should call the renderHook() and pass in the hook.
+The 'result' should be destructured from the renderHook call and we can than make any assertions or call methods from result.current.
+
+Example
+
+```
+    const { result } = renderHook(useCounter)
+    expect(result.current.count).toBe(0)
+```
+
+#### DEBUG
 
 Visualize the DOM at any given point in the test
 
@@ -156,7 +261,7 @@ const view = render(<SomeElement something={something} />)
 logRoles(view.container)
 ```
 
-## TESTING PLAYGROUND EXTENSION
+#### TESTING PLAYGROUND EXTENSION
 
 Level 9000 hack for recommending optimal query method, find testing playground in chrome console and inspect page element
 
