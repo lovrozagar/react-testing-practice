@@ -12,8 +12,9 @@
 8. [User Event](#user-event)
 9. [Providers](#providers)
 10. [Hooks](#hooks)
-11. [Debug](#debug)
-12. [Testing Playground Extension](#testing-playground-extension)
+11. [Mocks](#mocks)
+12. [Debug](#debug)
+13. [Testing Playground Extension](#testing-playground-extension)
 
 #### RENDER
 
@@ -248,7 +249,7 @@ act(() => result.current.increment())
 expect(result.current.count).toBe(1)
 ```
 
-#### MOCKING
+#### MOCKS
 
 MOCKING A FUNCTION JEST/VITEST
 
